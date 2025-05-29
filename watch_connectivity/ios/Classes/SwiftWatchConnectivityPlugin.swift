@@ -28,6 +28,8 @@ public class SwiftWatchConnectivityPlugin: NSObject, FlutterPlugin, WCSessionDel
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    checkAndReactivate()
+
     switch call.method {
     // Getters
     case "isSupported":
@@ -73,5 +75,13 @@ public class SwiftWatchConnectivityPlugin: NSObject, FlutterPlugin, WCSessionDel
     DispatchQueue.main.async {
       self.channel.invokeMethod("didReceiveApplicationContext", arguments: applicationContext)
     }
+  }
+
+  private func checkAndReactivate() {
+    guard let session = self.session else { return }
+    guard session.delegate == nil else { return }
+
+    session.delegate = self
+    session.activate()
   }
 }
